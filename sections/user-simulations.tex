@@ -1,0 +1,64 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../diagrams/}}}
+\begin{document}
+
+To show that application works properly, there will be described some steps to perform activities and check if they matches expected outcome. 
+
+
+\subsection{Client making the order on the web app}
+
+\begin{enumerate}
+    
+    \item Client logs into the web app.
+    \item The list of available products with prices shows up.
+    \item Client can filter and sort products.
+    \item Client adds some products to shopping cart and chooses product quantity in a modal box.
+    \item Client chooses the payment method and submits the order.
+    \item Client module informs the shop module, that there is a new pending order.
+    \item Client module informs the delivery module, that there is a new pending order.
+    \item Shop worker gets notification and accepts pending order.
+    \item Courier gets notification and accepts pending order.
+    \item Shop worker notifies the courier, that the package is ready.
+    \item Courier receive the package and delivers it to the client.
+    \item Client is notified, when the courier is at a given location.
+
+
+\end{enumerate}
+
+
+
+\subsection{Shop manager adding new product on the web app}
+
+\begin{enumerate}
+    \item Shop manager logs into the web app.
+    \item The list of products offer shows up.
+    \item Shop manager clicks the "Add new product" button.
+    \item The modal box with appropriate text inputs shows up.
+    \item Shop manager fills required fields and attaches the picture.
+    \item The new product is visible in the products list.
+\end{enumerate}
+
+\subsection{Shop worker is preparing an order}
+
+\begin{enumerate}
+    \item Shop worker starts working by logging in
+    \item After successful logging he should be declared as available
+    \item He can check if there are pending orders, if so he choose one and start collecting in
+    \item He should now have options to abandon the order or accept collecting while sending notification to courier
+    \item Shop worker can log off
+\end{enumerate}
+
+\subsection{Making a complaint}
+
+\begin{enumerate}
+    \item Client makes a complaint after receiving an order
+    \item Client can add or delete highlighted products which did not meet his expectations
+    \item Client can submit a complaint
+    \item Shop worker can see list of complained products
+    \item Shop worker can mark which products are right justified to complain
+    \item Shop worker can see amount of money he need to recharge to a client
+    \item Shop worker can send appropriate amount of money to a client
+\end{enumerate}
+
+
+\end{document}

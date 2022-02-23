@@ -1,0 +1,131 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../diagrams/}}}
+\begin{document}
+\subsection{Key Functionalities}
+
+Main function of the app is to allow users to make grocery products orders from a given supermarket chain (like Carrefour). Orders are then delivered to clients by couriers.
+
+\subsubsection{Application users}
+\vspace{3mm}
+Application has following types of users:
+\begin{itemize}
+    \item clients -- they can log into web app and place an order
+    \item couriers -- they typically use app as a mobile web page to correctly deliver the order 
+    \item shop employees -- they use web app to check order items, change order status and contacting with the courier
+    \item shop managers -- they use web app to manage chain of shop facilities and product offer
+\end{itemize}
+
+\subsubsection{Application flow}
+
+\vspace{3mm}
+\begin{enumerate}
+    \item Client logs into the web app and places an order.
+    \item Order is put into the system as pending order.
+    \item One of the shops accepts the order.
+    \item Shop employee prepares the order.
+    \item Shop employee notifies couriers, that the package is ready to be delivered.
+    \item One of the couriers accepts the delivery request.
+    \item Courier delivers the order to the customer.
+    \item If client chose cash payment, courier collects the payment from the client.
+    \item Order is saved in the system as completed and can be accessed by shop manager from the web app.
+\end{enumerate}
+
+\subsubsection{Acceptance criteria}
+
+Below are the key acceptance criteria of the system. Acceptance criteria are defined for main user stories of each app user.
+
+\vspace{3mm}
+\newpage
+\begin{oframed}
+    User story: \textbf{As a client I want to make an order.}
+    
+    Acceptance criteria checklist
+    \begin{itemize}
+        \item Can I observe expected time of delivery?
+        \item Can I choose the time of delivery?
+        \item Can I see, which products are unavailable?
+        \item Can I cancel the order?
+        \item Can I read product reviews?
+    \end{itemize}
+    Non-functional requirements
+    \begin{itemize}
+        \item Can I sort and filter the list of products?
+        \item Is the expected time of delivery computed in real time?
+    \end{itemize}
+\end{oframed}
+\vspace{5mm}
+\begin{oframed}
+    User story: \textbf{As a courier I want to deliver the order.}
+    
+    Acceptance criteria checklist
+    \begin{itemize}
+        \item Can I see the destination location?
+        \item Can I see the requested time slot?
+    \end{itemize}
+    Non-functional requirements
+    \begin{itemize}
+        \item Can I generate the shortest path?
+        \item Can I reassign the order to another courier?
+    \end{itemize}
+\end{oframed}
+\vspace{5mm}
+\begin{oframed}
+    User story: \textbf{As a Shop employee I want to prepare the order and change its status.}
+    
+    Acceptance criteria checklist
+    \begin{itemize}
+        \item Can I pick up the order from pending orders and change its status to Collecting?
+        \item Can I change order status to WaitingForCourier and notify the courier, that the package is ready?
+        \item Can I see all the products in the order?
+        \item Can I reject the order?
+    \end{itemize}
+    Non-functional requirements
+    \begin{itemize}
+        \item Does a change of OrderStatus changes it on all modules?
+        \item Is order assigned to another shop, if I reject the order?
+        \item Do I receive the notification, when there is a new pending order?
+    \end{itemize}
+\end{oframed}
+\vspace{5mm}
+\begin{oframed}
+    User story: \textbf{As a shop manager I want to manage the list of products.}
+    
+    Acceptance criteria checklist
+    \begin{itemize}
+        \item Can I add a new product to the offer?
+        \item Can I remove a product?
+        \item Can I modify the price of the product?
+    \end{itemize}
+    Non-functional requirements
+    \begin{itemize}
+        \item Are products in the list unique?
+        \item Does the price change have no effect on the current orders?
+    \end{itemize}
+\end{oframed}
+
+\subsection{Non-functional requirements}
+The requirements that define how our system is supposed to be and correspond to the abbreviation URPS are shown below. 
+
+\subsubsection{Usability}
+The application has a easy-to-use interface similar to existing online grocery shopping services. The layout is intuitive (i.e. there is a navigation bar on top of the page with login/registration components, a shopping cart button etc.). The customer is presented with a list of products but can also search for items by keywords. The products can be filtered and sorted. 
+
+\subsubsection{Reliability}
+The application should handle situations like broken connection or unsuccessful payment. Shop module should also inform client, when there is no products or couriers available or the delivery time is getting longer.
+
+When there is temporary no connection to the internet, application shouldn't log out the user. In this scenario, app should also remember the current state (it is easy to achieve in Single Page Application architecture).
+
+Application should also use refresh token to sign in a user without forcing him to enter the credentials.
+
+Lastly, the modules should be independent of each other, so that the crash of the one module doesn't affect other ones.
+
+
+\subsubsection{Performance}
+The app is expected to function properly with around 500 people using it at once. The users should be able to filter products and make their orders in a reasonable amount of time.
+
+The notification mechanism should be well optimized, in order to provide nearly real time communication between modules and system actors.
+
+\subsubsection{Supportability}
+
+The system should collect logs from all modules and store them in a database. Thanks to that, when the bug or crash occurs, system administrators can check causes and report it to the development team.
+
+\end{document}

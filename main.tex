@@ -1,0 +1,89 @@
+\documentclass[english]{article}
+
+\usepackage[nosingleletter, lastparline]{impnattypo}
+\usepackage{babel}
+\usepackage{bookmark}
+\usepackage[babel, tracking]{microtype}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{framed}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{parskip}
+\usepackage{minted}
+
+\setminted{frame=single, breaklines, autogobble, linenos}
+
+\linespread{1.3}
+\setlength{\parindent}{0pt}
+
+\graphicspath{{diagrams/}}
+
+\usepackage{subfiles} 
+
+\title{\textbf{Groceries delivery} \\
+\large{Group H}}
+\author{
+  Anna Hoang \\
+  Jakub Jasiński \\
+  Mikołaj Kornaś \\
+  Piotr Rogulski \\
+  Jan Szablanowski
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+\section{Introduction}
+\subfile{sections/introduction}
+
+\newpage
+\section{System Specification}
+\subfile{sections/system-specification}
+
+\newpage
+\section{System structure}
+\subfile{sections/system-structure/system-structure}
+
+\newpage
+\section{System states}
+\subfile{sections/system-states}
+
+\newpage
+\section{System activities}
+\subfile{sections/system-activities}
+
+
+\newpage
+\section{Communication}
+\subfile{sections/communication/sequence-diagrams}
+\newpage
+\subfile{sections/communication/message-structure}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+\newpage
+\section{Error handling}
+\subfile{sections/error-handling}
+
+\newpage
+\section{Simulations of usage}
+\subfile{sections/user-simulations}
+
+\section{Attachments}
+
+
+\subsection{Message definitions}
+
+See \texttt{messagesHTML.html} in the attachments to explore message definitions as a web page.
+\vspace{10mm}
+
+\setminted{frame=single, bgcolor=bg, breaklines=true, autogobble}
+\inputminted[label={messagesRAML.raml}]{YAML}{{sections/communication/messagesRAML.raml}}
+
+
+\end{document}

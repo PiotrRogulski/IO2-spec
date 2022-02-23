@@ -1,0 +1,97 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../diagrams/}}}
+
+\begin{document}
+
+\subsection{Message structure}
+\vspace{5mm}
+This section shows how messages are structured in our system. For further information please refer to our RAML and html files (see: \textit{Attachments} section). Given examples below are represented in a JSON format.
+
+\subsubsection{Order}
+The order is represented by an object that consists of a unique id, an array of purchased items, its status and dates of creation and delivery. It also consists of clients data - their address, additional info. 
+When a client makes a new order and later confirms the purchase, the database denotes the new Order. It is done through the \texttt{POST} method to \texttt{/orders/create/\{userId\}}. A \texttt{GET} request is made to \texttt{/orders/pending} when the Shop Worker is looking for all pending orders that are to be handled but when its a specific Order, \texttt{GET} is called to \texttt{/orders/\{orderId\}}. The boolean field called 'confirmedPayment' is set to \texttt{false} until the accounts are settled. The update is made by calling a \texttt{PUT} method to \texttt{/orders/\{orderId\}/payment}.
+
+\begin{listing}[htp]
+\begin{minted}{js}
+{
+    "orderId": "c2cf4e9e-0393-4189-af47-0aab382ce330",
+    "orderItems": [
+        {
+            "orderItemId": "ca543631-3df7-4d06-8091-179df67c8460",
+            "grossPrice": 12,
+            "currency": "PLN",
+            "productName": "bread",
+            "quantity": 3
+        }
+    ],
+    "creationDate": "2021-12-01 12:30:22",
+    "deliveryDate": "2021-12-01 13:30:22",
+    "clientAddress": {
+        "street": "Prosta 12",
+        "city": "Warszawa",
+        "zipCode": "00-631"
+    },
+    "additionalInfo": "Info from the client",
+    "orderStatus": "Pending",
+    "confirmedPayment": false
+}
+\end{minted}
+\caption{Message structure - Order}
+\end{listing}
+
+\subsubsection{OrderStatus}
+There are several states in which the Order can be in. The following ones have been considered in the messages: Pending, InPreparation, ReadyForDelivery, PickedUpByCourier, RejectedByShop, RejectedByCustomer, Delivered. This field is modified each time some action is made upon the particular order. The methods 
+\texttt{PUT} and \texttt{GET} are provided with the chosen Orders id as well as with the adequate action name. For example, by sending these requests to \texttt{/orders/\{orderId\}/pickup} one can update the status to 'PickedUpByCourier'. 
+
+\begin{listing}[htp]
+\begin{minted}{js}
+    "ReadyForDelivery"
+\end{minted}
+\caption{Message structure - OrderStatus}
+\end{listing}
+
+
+\subsubsection{Client}
+The clients information passed in messages are i.e.: phoneNumber and clientAddress.
+In order to find more details about the client who created an Order in the \texttt{GET} method \texttt{/clients/\{clientAddress\}} is used.
+
+\begin{listing}[htp]
+\begin{minted}{js}
+{
+    "userId": "2bcd5428-7bb2-11ec-90d6-0242ac120003",
+    "phoneNumber": "123456789",
+    "clientAddress": {
+        "street": "Prosta 12",
+        "city": "Warszawa",
+        "zipCode": "00-631"
+    }
+}
+\end{minted}
+\caption{Message structure - Client}
+\end{listing}
+
+\subsubsection{Complaint}
+Each complaint can be created by a client similarly to how it's in case of an order. It has a unique id, consists of an id of an order it refers to and has a status field that can be modified by shop employees. Similarly to how the client creates a new order, the \texttt{POST} call is done to the url that ends with \texttt{/create/\{userId\}} . The \texttt{GET} method to \texttt{/complaints/pending} retrieves a list of all pending complaints.
+
+\begin{listing}[htp]
+\begin{minted}{js}
+{
+    "complaintId": "061ac70b-e370-40ca-a12e-9ea146ae9429",
+    "orderId": "e41d4a1b-e771-4eae-84c8-c598ee60d627",
+    "status": "Rejected",
+    "text": "Delivery was 5 minutes late"
+}
+\end{minted}
+\caption{Message structure - Complaint}
+\end{listing}
+
+\subsubsection{ComplaintStatus}
+When the complaint was pending and is now handled by a given shop, it can either be accepted or rejected, therefore \texttt{PUT} method is called to update an appropriate record in the database. The call is made to \texttt{/complaints/\{action\}}, where \texttt{action} is one of the two mentioned possibilities.
+
+\begin{listing}[htp]
+\begin{minted}{js}
+    "Rejected"
+\end{minted}
+\caption{Message structure - ComplaintStatus}
+\end{listing}
+\end{document}

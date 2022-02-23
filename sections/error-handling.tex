@@ -1,0 +1,25 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../diagrams/}}}
+\begin{document}
+
+
+During using the application users can face up some problems and errors. There are several kinds of errors along with an exemplary reaction from project application. will be described below.
+
+\subsection{Errors during handling requests and transactions}
+
+Most of error sent from the server during handling requests are only informative. It is required, to show some kind of notification to the user - popup window is preferred, but no hard requirements are specified and form can be different if it will look better. If Frontend is timeouted or it could not establish connection to the server - handling is again the same. For this last case, connection to the server failed, Frontend can create artificial response to display information in the same way as the rest of the errors.
+
+\subsection{False login credentials}
+
+From a user’s point of view, a situation may occur when a user tries to log into the website while providing false credentials. In that case, a user will get a single error message stating that the login and password were wrong, and after that he will be able to try to connect one again. However, after fifth trial of bad password of the same login the account connected to that login will be temporarily blocked for 5 minutes. After five minutes the CAPTCHA will appear to check if the user is a human.
+
+\subsection{Disconnected module}
+
+If the module is disconnected user should be taken to the last
+view of the app and the notification about losing connection should be sent. In shop module it should be list of products and phone numbers to available couriers and clients, in courier module it should be client's address and phone numbers to shop and client as for the client module it should be phone number to shop and courier . Then, if server failed completely, user should see error about the connection provided by this other view, and in case they was disconnected because of lack of authentication - again proper error will be displayed by another view and user will be taken to the login view.
+
+\subsection{Failure with connecting to database}
+
+Adding and updating elements in the database should be transactional - so if server failed before it is finished, it will not be changed. If it finished - new elements will be visible in the Frontend anyway after the server is restarted. An error of disconnected database could occur when trying to either read previous measurements from it, or when trying to save a freshly created one. That problem could easily occur when first checking the connection before even starting the In that case, user should be informed about that in an error message just after single attempt. The server never tries to connect to the database by itself, as it could make our application prone to attacks.
+
+\end{document}
