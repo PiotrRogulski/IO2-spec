@@ -4,7 +4,7 @@
 
 \begin{document}
 \subsection{Aims \& Purpose}
-The purpose of the system is to provide a web and mobile application for grocery shopping and delivery. It allows the client to browse available products and place orders on them. They can also create sets of favorite products in order to facilitate future browsing. When the order is placed, the client can view the status of the order and communicate with the courier. The system also includes an interface for shop employees to prepare and dispatch orders.
+The purpose of the system is to provide a web application for grocery shopping and delivery. It allows the client to browse available products and place orders on them. They can also create sets of favorite products in order to facilitate future browsing. When the order is placed, the client can view the status of the order and communicate with the courier. The system also includes an interface for shop employees to prepare and dispatch orders.
 
 \subsection{Modules}
 The system comprises three modules:
@@ -20,13 +20,19 @@ Each module takes part in the process of fulfilling an order. To describe each m
 
 
 
-As shown in the next diagram, system has typical microservice structure with backend, web app and mobile app. Backend consist of three independent modules (each with its own database). Modules communicate with each other using REST protocol.
+As shown in the next diagram, system has typical multilayered structure with backend, web app and identity provider. Backend consist of three independent modules (each with its own database). Modules communicate with each other using REST protocol (see Attachments section).
 
-Furthermore, communication between backend and frontend runs through Api gateway, which is single entry point for all client applications. Api gateway connects also with Identity provider (e.g. Identity Server, Google), that is the source of JWT tokens needed to authenticate to the backend. Information about specific users is stored in Users database in the backend.
+Furthermore, communication between backend and frontend runs through Api gateway, which is single entry point for the web application. Api gateway connects also with Identity provider (e.g. IdentityServer4, Google), that is the source of tokens needed to authenticate to the backend.
 
-There are two client applications: mobile and web. Mobile app is the one, that will be used by the most users to place orders. It will be also used by the couriers to manage delivery process and by the shop employees to prepare orders. 
 
-Web app has customer view with the same functionalities as the mobile app. It also contains shop manager view, which is used by managers to change products offer and add new shop units to the system.
+Web app has four basic views for customer, courier, shop employee and shop manager. 
+\begin{itemize}
+    \item customer view - browsing product offer and placing orders
+    \item courier view - managing delivery process
+    \item shop employee view - managing order preparation process
+    \item shop manager view - managing product offer
+\end{itemize}
+
 
 \newpage
 
@@ -40,9 +46,9 @@ Web app has customer view with the same functionalities as the mobile app. It al
 
 \subsection{Technological stack}
 
-The backend consists of three independent modules, that implement business logic, one api gateway and four databases. Each module and api gateway should be implemented in a technology, that allows creating REST apis (e.g ASP.NET, Node). Databases should be relational (e.g. SQL Server, PostreSQL).
+The backend consists of three independent modules, that implement business logic, one api gateway and three databases. Each module and api gateway should be implemented in a technology, that allows creating REST apis (e.g ASP.NET, Node). Databases should be relational (e.g. SQL Server, PostreSQL).
 
-Web client app should be a Single Page Application (e.g. React, Angular), which implements OAuth 2.0 flow. Lastly, mobile app should be written in a technology, that is cross-platform (like React Native, Flutter).
+Web client app should be a Single Page Application (e.g. React, Angular), which implements OAuth 2.0 flow.
 
 The whole system, including databases and client apps should be deployed to the cloud (e.g. Azure) and ideally use some kind of containerization (Docker).
 
