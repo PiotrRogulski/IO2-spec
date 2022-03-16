@@ -52,6 +52,10 @@ Web client app should be a Single Page Application (e.g. React, Angular), which 
 
 The whole system, including databases and client apps should be deployed to the cloud (e.g. Azure) and ideally use some kind of containerization (Docker).
 
+\subsection{Authorization}
+
+Application should use OAuth 2.0 end user authentication (preferably IdentityServer4 with username and password). The auth flow should be Authorization Code Flow with PKCE, because our web app is a Single-Page-Application (most likely written in React or Angular) and secrets can't be used in the source code.
+
 \subsection{User Stories}
 
 In total, there are five actors in the system: the client, the courier, the shop employee, the shop manager (which is also a shop employee) and the algorithm. The system provides each actor with functionalities included in Table~\ref{tab:user_stories}. Note that the algorithm doesn't have an explicit user interface and, as such, shall be effectively transparent to other users. 
