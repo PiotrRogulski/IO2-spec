@@ -37,7 +37,7 @@ types:
             orderItems: OrderItem[]
             creationDate: datetime
             deliveryDate: datetime
-            clientAddress: 
+            clientAddress:
                 type: object
                 properties:
                     street: string
@@ -58,7 +58,7 @@ types:
             }]
             creationDate: 2021-12-01T12:30:22.52Z
             deliveryDate: 2021-12-01T13:30:22.52Z
-            clientAddress: 
+            clientAddress:
                 street: Prosta 12
                 city: Warszawa
                 zipCode: 00-631
@@ -73,7 +73,7 @@ types:
             phoneNumber:
                 type: string
                 pattern: ^[0-9]{9}$
-            clientAddress: 
+            clientAddress:
                 type: object
                 properties:
                     street: string
@@ -82,7 +82,7 @@ types:
         example:
             userId: 2bcd5428-7bb2-11ec-90d6-0242ac120003
             phoneNumber: "123456789"
-            clientAddress: 
+            clientAddress:
                 street: Prosta 12
                 city: Warszawa
                 zipCode: 00-631
@@ -102,7 +102,17 @@ types:
             orderId: e41d4a1b-e771-4eae-84c8-c598ee60d627
             status: Rejected
             text: Delivery was 5 minutes late
-             
+    Product:
+        description: Product
+        type: object
+        properties:
+            name: string
+            category: string
+            price: number
+            quantity:
+                type: number
+                description: Available quantity. Will always be integral.
+
 /orders:
     /create:
         /{userId}:
@@ -110,7 +120,7 @@ types:
                 description: Add clients order to database
                 body:
                     application/json:
-                        type: Order      
+                        type: Order
                 responses:
                     201:
                         body:
@@ -123,10 +133,10 @@ types:
                             text/plain:
                                 description: |
                                     Failed to create order
-                                type: string         
+                                type: string
     /pending:
         /{shopId}:
-            get: 
+            get:
                 description: Get pending orders assigned to shop
                 responses:
                     200:
@@ -159,7 +169,7 @@ types:
                             type: string
         /takeForPreparation:
             put:
-                description: Set order state to inPreparation 
+                description: Set order state to inPreparation
                 body:
                     application/json:
                         type: OrderStatus
@@ -178,7 +188,7 @@ types:
                                 type: string
         /confirm:
             put:
-                description: Set order state to ReadyForDelivery 
+                description: Set order state to ReadyForDelivery
                 body:
                     application/json:
                         type: OrderStatus
@@ -197,7 +207,7 @@ types:
                                 type: string
         /pickup:
             put:
-                description: Set order state to PickedUpByCourier 
+                description: Set order state to PickedUpByCourier
                 body:
                     application/json:
                         type: OrderStatus
@@ -280,7 +290,7 @@ types:
                     description: Add clients complaint to database
                     body:
                         application/json:
-                            type: Complaint      
+                            type: Complaint
                     responses:
                         201:
                             body:
@@ -293,7 +303,7 @@ types:
                                 text/plain:
                                     description: |
                                         Failed to make a complaint
-                                    type: string    
+                                    type: string
     /pending:
         /{shopId}:
             get:
@@ -329,7 +339,7 @@ types:
                             type: string
         /accept:
             put:
-                description: Accept complaint 
+                description: Accept complaint
                 body:
                     application/json:
                         type: ComplaintStatus
@@ -369,7 +379,7 @@ types:
 
 /clients:
     /{clientAddress}:
-        get: 
+        get:
             description: Get details about client
             responses:
                 200:
@@ -384,3 +394,46 @@ types:
                             description: |
                                 Client not found.
                             type: string
+
+/products:
+    /{productId}:
+        get:
+            description: Get product information
+            responses:
+                200:
+                    body:
+                        application/json:
+                            description: |
+                                Successfully got product info.
+                            type: Product
+                404:
+                    body:
+                        text/plain:
+                            description: |
+                                Product not found.
+    /category:
+        /{category}:
+            get:
+                description: Get all products in the specifies category
+                responses:
+                    200:
+                        body:
+                            application/json:
+                                description: |
+                                    Successfully got products info.
+                                type: Product[]
+                    404:
+                        body:
+                            text/plain:
+                                description: |
+                                    Category not found.
+    get:
+        description: Get all products
+        responses:
+            200:
+                body:
+                    application/json:
+                        description: |
+                            Successfully got products info.
+                        type: Product[]
+
