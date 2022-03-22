@@ -37,7 +37,7 @@ types:
             orderItems: OrderItem[]
             creationDate: datetime
             deliveryDate: datetime
-            clientAddress:
+            clientAddress: 
                 type: object
                 properties:
                     street: string
@@ -58,34 +58,13 @@ types:
             }]
             creationDate: 2021-12-01T12:30:22.52Z
             deliveryDate: 2021-12-01T13:30:22.52Z
-            clientAddress:
+            clientAddress: 
                 street: Prosta 12
                 city: Warszawa
                 zipCode: 00-631
             additionalInfo: Info from the client
             orderStatus: Pending
             confirmedPayment: false
-    Client:
-        description: Client
-        type: object
-        properties:
-            userId: UUID
-            phoneNumber:
-                type: string
-                pattern: ^[0-9]{9}$
-            clientAddress:
-                type: object
-                properties:
-                    street: string
-                    city: string
-                    zipCode: string
-        example:
-            userId: 2bcd5428-7bb2-11ec-90d6-0242ac120003
-            phoneNumber: "123456789"
-            clientAddress:
-                street: Prosta 12
-                city: Warszawa
-                zipCode: 00-631
     ComplaintStatus:
         type: string
         enum: [Pending, Accepted, Rejected]
@@ -102,25 +81,15 @@ types:
             orderId: e41d4a1b-e771-4eae-84c8-c598ee60d627
             status: Rejected
             text: Delivery was 5 minutes late
-    Product:
-        description: Product
-        type: object
-        properties:
-            name: string
-            category: string
-            price: number
-            quantity:
-                type: number
-                description: Available quantity. Will always be integral.
-
+        
 /orders:
-    /create:
+    /place:
         /{userId}:
             post:
                 description: Add clients order to database
                 body:
                     application/json:
-                        type: Order
+                        type: Order      
                 responses:
                     201:
                         body:
@@ -133,10 +102,10 @@ types:
                             text/plain:
                                 description: |
                                     Failed to create order
-                                type: string
+                                type: string         
     /pending:
         /{shopId}:
-            get:
+            get: 
                 description: Get pending orders assigned to shop
                 responses:
                     200:
@@ -169,7 +138,7 @@ types:
                             type: string
         /takeForPreparation:
             put:
-                description: Set order state to inPreparation
+                description: Set order state to inPreparation 
                 body:
                     application/json:
                         type: OrderStatus
@@ -188,7 +157,7 @@ types:
                                 type: string
         /confirm:
             put:
-                description: Set order state to ReadyForDelivery
+                description: Set order state to ReadyForDelivery 
                 body:
                     application/json:
                         type: OrderStatus
@@ -205,45 +174,7 @@ types:
                                 description: |
                                     Failed to take for delivery.
                                 type: string
-        /pickup:
-            put:
-                description: Set order state to PickedUpByCourier
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        body:
-                            application/json:
-                                description: |
-                                    Successfully picked up order.
-                                type: OrderStatus
-                    404:
-                        body:
-                            text/plain:
-                                description: |
-                                    Failed to pick up the order.
-                                type: string
         /reject:
-            /{userId}:
-                put:
-                    description: The order was rejected by the client.
-                    body:
-                        application/json:
-                            type: OrderStatus
-                    responses:
-                        200:
-                            body:
-                                application/json:
-                                    description: |
-                                        The order was rejected by client.
-                                    type: OrderStatus
-                        404:
-                            body:
-                                text/plain:
-                                    description: |
-                                        Order not found
-                                    type: string
             put:
                 description: The order was rejected by the shop.
                 body:
@@ -262,48 +193,27 @@ types:
                                 description: |
                                     Order not found
                                 type: string
-        /payment:
-            put:
-                description: |
-                    Update payment status.
+/complaints:
+    /create:
+        /{userId}:
+            post:
+                description: Add clients complaint to database
                 body:
                     application/json:
-                        type: boolean
+                        type: Complaint      
                 responses:
-                    200:
+                    201:
                         body:
                             application/json:
                                 description: |
-                                    Successfully updated the payment state.
-                                type: boolean
+                                    Successfully made a complaint
+                                type: Complaint
                     404:
                         body:
                             text/plain:
                                 description: |
-                                    Failed to update the payment state.
-                                type: string
-
-/complaints:
-    /create:
-            /{userId}:
-                post:
-                    description: Add clients complaint to database
-                    body:
-                        application/json:
-                            type: Complaint
-                    responses:
-                        201:
-                            body:
-                                application/json:
-                                    description: |
-                                        Successfully made a complaint
-                                    type: Complaint
-                        404:
-                            body:
-                                text/plain:
-                                    description: |
-                                        Failed to make a complaint
-                                    type: string
+                                    Failed to make a complaint
+                                type: string    
     /pending:
         /{shopId}:
             get:
@@ -339,7 +249,7 @@ types:
                             type: string
         /accept:
             put:
-                description: Accept complaint
+                description: Accept complaint 
                 body:
                     application/json:
                         type: ComplaintStatus
@@ -376,25 +286,6 @@ types:
                                 description: |
                                     Complaint not found.
                                 type: string
-
-/clients:
-    /{clientAddress}:
-        get:
-            description: Get details about client
-            responses:
-                200:
-                    body:
-                        application/json:
-                            description: !
-                                Successfully gotten clients info.
-                            type: Client
-                404:
-                    body:
-                        text/plain:
-                            description: |
-                                Client not found.
-                            type: string
-
 /products:
     /{productId}:
         get:
@@ -406,6 +297,19 @@ types:
                             description: |
                                 Successfully got product info.
                             type: Product
+                404:
+                    body:
+                        text/plain:
+                            description: |
+                                Product not found.
+        delete:
+            description: remove product from shops's offer
+            responses:
+                200:
+                    body:
+                        application/json:
+                            description: |
+                                Succesfully deleted product.
                 404:
                     body:
                         text/plain:
@@ -436,4 +340,19 @@ types:
                         description: |
                             Successfully got products info.
                         type: Product[]
-
+    post:
+        description: Add product to shop's offer
+        body:
+            application/json:
+                type: Product
+        responses:
+            200:
+                body:
+                    description: |
+                        Succesfully added product.
+                    type: boolean
+            404:
+                text/plain:
+                    description: |
+                        Failed to add product.
+                    type: string
