@@ -1,7 +1,39 @@
 #%RAML 1.0
-title: Groceries delivery app - Shop module
+title: Groceries delivery app - Gateway
 version: v1
 baseUri: https://shop.mini-delivery.com/
+securitySchemes:
+    oauth_2_0:
+        description: |
+            OAuth 2.0 for authenticating API requests.
+        type: OAuth 2.0
+        describedBy:
+            headers:
+                Authorization:
+                    description: |
+                        Used to send a valid OAuth 2 access token. Do not use 
+                        with the "access_token" query string parameter.
+                    type: string
+            queryParameters:
+                access_token:
+                    description: |
+                        Used to send a valid OAuth 2 access token. Do not use together with 
+                        the "Authorization" header
+                    type: string
+            responses:
+                401:
+                    description: |
+                        Bad or expired token. This can happen if the user or Identity Provider
+                        revoked or expired an access token. To fix, you should re-
+                        authenticate the user.
+                403:
+                    description: |
+                        Bad OAuth request (wrong consumer key, bad nonce, expired
+                        timestamp...). Re-authenticating the user won't help here.
+        settings:
+            authorizationUri: https://example-identity-provider.com/oauth2/authorize
+            accessTokenUri: https://example-identity-provider.com/oauth2/token
+            authorizationGrants: [ authorization_code ]
 types:
     UUID:
         type: string
@@ -117,6 +149,7 @@ types:
     /create:
         /{userId}:
             post:
+                securedBy: [ oauth_2_0 ]
                 description: Add clients order to database
                 body:
                     application/json:
@@ -137,6 +170,7 @@ types:
     /pending:
         /{shopId}:
             get:
+                securedBy: [ oauth_2_0 ]
                 description: Get pending orders assigned to shop
                 responses:
                     200:
@@ -153,6 +187,7 @@ types:
                                 type: string
     /{orderId}:
         get:
+            securedBy: [ oauth_2_0 ]
             description: Get chosen order
             responses:
                 200:
@@ -169,6 +204,7 @@ types:
                             type: string
         /takeForPreparation:
             put:
+                securedBy: [ oauth_2_0 ]
                 description: Set order state to inPreparation
                 body:
                     application/json:
@@ -188,6 +224,7 @@ types:
                                 type: string
         /confirm:
             put:
+                securedBy: [ oauth_2_0 ]
                 description: Set order state to ReadyForDelivery
                 body:
                     application/json:
@@ -207,6 +244,7 @@ types:
                                 type: string
         /pickup:
             put:
+                securedBy: [ oauth_2_0 ]
                 description: Set order state to PickedUpByCourier
                 body:
                     application/json:
@@ -227,6 +265,7 @@ types:
         /reject:
             /{userId}:
                 put:
+                    securedBy: [ oauth_2_0 ]
                     description: The order was rejected by the client.
                     body:
                         application/json:
@@ -245,6 +284,7 @@ types:
                                         Order not found
                                     type: string
             put:
+                securedBy: [ oauth_2_0 ]
                 description: The order was rejected by the shop.
                 body:
                     application/json:
@@ -264,6 +304,7 @@ types:
                                 type: string
         /payment:
             put:
+                securedBy: [ oauth_2_0 ]
                 description: |
                     Update payment status.
                 body:
@@ -287,6 +328,7 @@ types:
     /create:
             /{userId}:
                 post:
+                    securedBy: [ oauth_2_0 ]
                     description: Add clients complaint to database
                     body:
                         application/json:
@@ -307,6 +349,7 @@ types:
     /pending:
         /{shopId}:
             get:
+                securedBy: [ oauth_2_0 ]
                 description: Get pending complaints adressed to the shop
                 responses:
                     200:
@@ -323,6 +366,7 @@ types:
                                 type: string
     /{complaintId}:
         get:
+            securedBy: [ oauth_2_0 ]
             description: Get chosen complaint.
             responses:
                 200:
@@ -339,6 +383,7 @@ types:
                             type: string
         /accept:
             put:
+                securedBy: [ oauth_2_0 ]
                 description: Accept complaint
                 body:
                     application/json:
@@ -359,6 +404,7 @@ types:
                                 type: string
         /reject:
             put:
+                securedBy: [ oauth_2_0 ]
                 description: Reject complaint.
                 body:
                     application/json:
@@ -380,6 +426,7 @@ types:
 /clients:
     /{clientAddress}:
         get:
+            securedBy: [ oauth_2_0 ]
             description: Get details about client
             responses:
                 200:
