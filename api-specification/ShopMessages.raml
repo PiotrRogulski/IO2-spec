@@ -59,8 +59,12 @@ types:
             productName: bread
             quantity: 3
     OrderStatus:
-        type: string
-        enum: [Pending, InPreparation, ReadyForDelivery, PickedUpByCourier, RejectedByShop, RejectedByCustomer, Delivered]
+        type: object
+        description: Order Status
+        properties:
+            orderStatus:
+                type: string
+                enum: [Pending, InPreparation, ReadyForDelivery, PickedUpByCourier, RejectedByShop, RejectedByCustomer, Delivered]
     Order:
         description: Groceries products order
         type: object
@@ -125,16 +129,14 @@ types:
                         type: Order      
                 responses:
                     201:
+                        description: Successfully created order
                         body:
                             application/json:
-                                description: |
-                                    Successfully created order
                                 type: Order
                     404:
+                        description: Failed to create order
                         body:
                             text/plain:
-                                description: |
-                                    Failed to create order
                                 type: string         
     /pending:
         /{shopId}:
@@ -143,16 +145,14 @@ types:
                 description: Get pending orders assigned to shop
                 responses:
                     200:
+                        description: Successfully got pending orders
                         body:
                             application/json:
-                                description: |
-                                    Successfully got pending orders
                                 type: Order[]
                     404:
+                        description: Failed to get pending orders
                         body:
                             text/plain:
-                                description: |
-                                    Failed to get pending orders
                                 type: string
     /{orderId}:
         get:
@@ -160,16 +160,14 @@ types:
             description: Get chosen order
             responses:
                 200:
+                    description: Successfully got chosen order
                     body:
                         application/json:
-                            description: |
-                                Successfully got chosen order
                             type: Order
                 404:
+                    description: Failed to get this order
                     body:
                         text/plain:
-                            description: |
-                                Failed to get this order
                             type: string
         /takeForPreparation:
             put:
@@ -180,16 +178,14 @@ types:
                         type: OrderStatus
                 responses:
                     200:
+                        description: Successfully taken for preperation.
                         body:
                             application/json:
-                                description: |
-                                    Successfully taken for preperation.
                                 type: OrderStatus
                     404:
+                        description: Failed to take for preperation.
                         body:
                             text/plain:
-                                description: |
-                                    Failed to take for preperation.
                                 type: string
         /confirm:
             put:
@@ -200,16 +196,14 @@ types:
                         type: OrderStatus
                 responses:
                     200:
+                        description: Successfully taken for delivery.
                         body:
                             application/json:
-                                description: |
-                                    Successfully taken for delivery.
                                 type: OrderStatus
                     404:
+                        description: Failed to take for delivery.
                         body:
                             text/plain:
-                                description: |
-                                    Failed to take for delivery.
                                 type: string
         /reject:
             put:
@@ -220,16 +214,14 @@ types:
                         type: OrderStatus
                 responses:
                     200:
+                        description: The order was rejected by shop.
                         body:
                             application/json:
-                                description: |
-                                    The order was rejected by shop.
                                 type: OrderStatus
                     404:
+                        description: Order not found                    
                         body:
                             text/plain:
-                                description: |
-                                    Order not found
                                 type: string
 /complaints:
     /create:
@@ -242,16 +234,14 @@ types:
                         type: Complaint      
                 responses:
                     201:
+                        description: Successfully made a complaint
                         body:
                             application/json:
-                                description: |
-                                    Successfully made a complaint
                                 type: Complaint
                     404:
+                        description: Failed to make a complaint
                         body:
                             text/plain:
-                                description: |
-                                    Failed to make a complaint
                                 type: string    
     /pending:
         /{shopId}:
@@ -260,16 +250,14 @@ types:
                 description: Get pending complaints adressed to the shop
                 responses:
                     200:
+                        description: Successfully got pending complaints.
                         body:
                             application/json:
-                                description: |
-                                    Successfully got pending complaints.
                                 type: Complaint[]
                     404:
+                        description: Failed to get pending complaints.
                         body:
                             text/plain:
-                                description: |
-                                    Failed to get pending complaints.
                                 type: string
     /{complaintId}:
         get:
@@ -277,16 +265,14 @@ types:
             description: Get chosen complaint.
             responses:
                 200:
+                    description: Successfully got chosen complaint.
                     body:
                         application/json:
-                            description: |
-                                Successfully got chosen complaint.
                             type: Complaint
                 404:
+                    description: Failed to get this complaint.
                     body:
                         text/plain:
-                            description: |
-                                Failed to get this complaint.
                             type: string
         /accept:
             put:
@@ -297,17 +283,15 @@ types:
                         type: ComplaintStatus
                 responses:
                     200:
+                        description: Accepted complaint.
                         body:
                             application/json:
-                                description: |
-                                    Accepted complaint.
                                 type: ComplaintStatus
 
                     404:
+                        description: Complaint not found.
                         body:
                             text/plain:
-                                description: |
-                                    Complaint not found.
                                 type: string
         /reject:
             put:
@@ -318,16 +302,14 @@ types:
                         type: ComplaintStatus
                 responses:
                     200:
+                        description: Rejected complaint.
                         body:
                             application/json:
-                                description: !
-                                    Rejected complaint.
                                 type: ComplaintStatus
                     404:
+                        description: Complaint not found.
                         body:
                             text/plain:
-                                description: |
-                                    Complaint not found.
                                 type: string
 /products:
     /{productId}:
@@ -335,54 +317,55 @@ types:
             description: Get product information
             responses:
                 200:
+                    description: Successfully got product info.
                     body:
                         application/json:
-                            description: |
-                                Successfully got product info.
                             type: Product
                 404:
+                    description: Product not found.
                     body:
                         text/plain:
-                            description: |
-                                Product not found.
+                            type: string
+                         
         delete:
             securedBy: [ oauth_2_0 ]
             description: remove product from shops's offer
             responses:
                 200:
+                    description: Succesfully deleted product.
                     body:
                         application/json:
-                            description: |
-                                Succesfully deleted product.
+                            type: Product
                 404:
+                    description: Product not found.
                     body:
                         text/plain:
-                            description: |
-                                Product not found.
+                            type: string
+                       
     /category:
         /{category}:
             get:
                 description: Get all products in the specifies category
                 responses:
                     200:
+                        description: Successfully got products info.
                         body:
                             application/json:
-                                description: |
-                                    Successfully got products info.
+        
                                 type: Product[]
                     404:
+                        description: Category not found.
                         body:
                             text/plain:
-                                description: |
-                                    Category not found.
+                                type: string
+                        
     get:
         description: Get all products
         responses:
             200:
+                description: Successfully got products info.
                 body:
                     application/json:
-                        description: |
-                            Successfully got products info.
                         type: Product[]
     post:
         securedBy: [ oauth_2_0 ]
@@ -392,12 +375,10 @@ types:
                 type: Product
         responses:
             200:
+                description: Succesfully added product.
                 body:
-                    description: |
-                        Succesfully added product.
                     type: boolean
             404:
+                description: Failed to add product.
                 text/plain:
-                    description: |
-                        Failed to add product.
                     type: string
