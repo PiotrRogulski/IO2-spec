@@ -117,7 +117,16 @@ types:
             orderId: e41d4a1b-e771-4eae-84c8-c598ee60d627
             status: Rejected
             text: Delivery was 5 minutes late
-        
+    Product:
+        description: Product
+        type: object
+        properties:
+            name: string
+            category: string
+            price: number
+            quantity:
+                type: number
+                description: Available quantity. Will always be integral.
 /orders:
     /place:
         post:
