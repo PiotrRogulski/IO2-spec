@@ -120,24 +120,23 @@ types:
         
 /orders:
     /place:
-        /{userId}:
-            post:
-                securedBy: [ oauth_2_0 ]
-                description: Add clients order to database
-                body:
-                    application/json:
-                        type: Order      
-                responses:
-                    201:
-                        description: Successfully created order
-                        body:
-                            application/json:
-                                type: Order
-                    404:
-                        description: Failed to create order
-                        body:
-                            text/plain:
-                                type: string         
+        post:
+            securedBy: [ oauth_2_0 ]
+            description: Add clients order to database
+            body:
+                application/json:
+                    type: Order      
+            responses:
+                201:
+                    description: Successfully created order
+                    body:
+                        application/json:
+                            type: Order
+                404:
+                    description: Failed to create order
+                    body:
+                        text/plain:
+                            type: string         
     /pending:
         /{shopId}:
             get: 
@@ -225,24 +224,23 @@ types:
                                 type: string
 /complaints:
     /create:
-        /{userId}:
-            post:
-                securedBy: [ oauth_2_0 ]
-                description: Add clients complaint to database
-                body:
-                    application/json:
-                        type: Complaint      
-                responses:
-                    201:
-                        description: Successfully made a complaint
-                        body:
-                            application/json:
-                                type: Complaint
-                    404:
-                        description: Failed to make a complaint
-                        body:
-                            text/plain:
-                                type: string    
+        post:
+            securedBy: [ oauth_2_0 ]
+            description: Add clients complaint to database
+            body:
+                application/json:
+                    type: Complaint      
+            responses:
+                201:
+                    description: Successfully made a complaint
+                    body:
+                        application/json:
+                            type: Complaint
+                404:
+                    description: Failed to make a complaint
+                    body:
+                        text/plain:
+                            type: string    
     /pending:
         /{shopId}:
             get:
