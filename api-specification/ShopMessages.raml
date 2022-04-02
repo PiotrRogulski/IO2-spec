@@ -380,7 +380,7 @@ types:
         /{category}:
             get:
                 is: [ paginated ]
-                description: Get all products in the specifies category
+                description: Get all products in the specifies category (paginated)
                 responses:
                     200:
                         body:
@@ -395,7 +395,7 @@ types:
                                     Category not found.
     get:
         is: [ paginated ]
-        description: Get all products
+        description: Get all products (paginated)
         responses:
             200:
                 body:
