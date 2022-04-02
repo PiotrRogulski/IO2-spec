@@ -2,6 +2,23 @@
 title: Groceries delivery app - Gateway
 version: v1
 baseUri: https://mini-delivery.com/
+traits:
+  paginated:
+      queryParameters:
+        page:
+          description: page
+          required: false
+          type: integer
+          format: int32
+        pageSize:
+          description: pageSize
+          required: false
+          type: integer
+          format: int32    
+      responses:
+        200:
+          headers:
+            x-total-pages:  
 securitySchemes:
     oauth_2_0:
         description: |
