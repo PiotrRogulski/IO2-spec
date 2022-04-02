@@ -59,8 +59,12 @@ types:
             productName: bread
             quantity: 3
     OrderStatus:
-        type: string
-        enum: [Pending, InPreparation, ReadyForDelivery, PickedUpByCourier, RejectedByShop, RejectedByCustomer, Delivered]
+        type: object
+        description: Order Status
+        properties:
+            orderStatus:
+                type: string
+                enum: [Pending, InPreparation, ReadyForDelivery, PickedUpByCourier, RejectedByShop, RejectedByCustomer, Delivered]
     Order:
         description: Groceries products order
         type: object
@@ -147,26 +151,25 @@ types:
 
 /orders:
     /create:
-        /{userId}:
-            post:
-                securedBy: [ oauth_2_0 ]
-                description: Add clients order to database
-                body:
-                    application/json:
-                        type: Order
-                responses:
-                    201:
-                        body:
-                            application/json:
-                                description: |
-                                    Successfully created order
-                                type: Order
-                    404:
-                        body:
-                            text/plain:
-                                description: |
-                                    Failed to create order
-                                type: string
+        post:
+            securedBy: [ oauth_2_0 ]
+            description: Add clients order to database
+            body:
+                application/json:
+                    type: Order
+            responses:
+                201:
+                    body:
+                        application/json:
+                            description: |
+                                Successfully created order
+                            type: Order
+                404:
+                    body:
+                        text/plain:
+                            description: |
+                                Failed to create order
+                            type: string
     /pending:
         /{shopId}:
             get:
@@ -263,10 +266,28 @@ types:
                                     Failed to pick up the order.
                                 type: string
         /reject:
-            /{userId}:
+            put:
+                securedBy: [ oauth_2_0 ]
+                description: The order was rejected by the client.
+                body:
+                    application/json:
+                        type: OrderStatus
+                responses:
+                    200:
+                        description: The order was rejected by client.
+                        body:
+                            application/json:
+                                type: OrderStatus
+                    404:
+                        description: |
+                                        Order not found
+                        body:
+                            text/plain:
+                                type: string
+            /shop:
                 put:
                     securedBy: [ oauth_2_0 ]
-                    description: The order was rejected by the client.
+                    description: The order was rejected by the shop.
                     body:
                         application/json:
                             type: OrderStatus
@@ -275,7 +296,7 @@ types:
                             body:
                                 application/json:
                                     description: |
-                                        The order was rejected by client.
+                                        The order was rejected by shop.
                                     type: OrderStatus
                         404:
                             body:
@@ -283,25 +304,6 @@ types:
                                     description: |
                                         Order not found
                                     type: string
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: The order was rejected by the shop.
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        body:
-                            application/json:
-                                description: |
-                                    The order was rejected by shop.
-                                type: OrderStatus
-                    404:
-                        body:
-                            text/plain:
-                                description: |
-                                    Order not found
-                                type: string
         /payment:
             put:
                 securedBy: [ oauth_2_0 ]
@@ -326,26 +328,25 @@ types:
 
 /complaints:
     /create:
-            /{userId}:
-                post:
-                    securedBy: [ oauth_2_0 ]
-                    description: Add clients complaint to database
+        post:
+            securedBy: [ oauth_2_0 ]
+            description: Add clients complaint to database
+            body:
+                application/json:
+                    type: Complaint
+            responses:
+                201:
                     body:
                         application/json:
+                            description: |
+                                Successfully made a complaint
                             type: Complaint
-                    responses:
-                        201:
-                            body:
-                                application/json:
-                                    description: |
-                                        Successfully made a complaint
-                                    type: Complaint
-                        404:
-                            body:
-                                text/plain:
-                                    description: |
-                                        Failed to make a complaint
-                                    type: string
+                404:
+                    body:
+                        text/plain:
+                            description: |
+                                Failed to make a complaint
+                            type: string
     /pending:
         /{shopId}:
             get:
