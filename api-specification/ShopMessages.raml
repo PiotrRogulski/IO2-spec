@@ -2,6 +2,38 @@
 title: Groceries delivery app - Shop module
 version: v1
 baseUri: https://shop.mini-delivery.com/
+securitySchemes:
+    oauth_2_0:
+        description: |
+            OAuth 2.0 for authenticating API requests.
+        type: OAuth 2.0
+        describedBy:
+            headers:
+                Authorization:
+                    description: |
+                        Used to send a valid OAuth 2 access token. Do not use 
+                        with the "access_token" query string parameter.
+                    type: string
+            queryParameters:
+                access_token:
+                    description: |
+                        Used to send a valid OAuth 2 access token. Do not use together with 
+                        the "Authorization" header
+                    type: string
+            responses:
+                401:
+                    description: |
+                        Bad or expired token. This can happen if the user or Identity Provider
+                        revoked or expired an access token. To fix, you should re-
+                        authenticate the user.
+                403:
+                    description: |
+                        Bad OAuth request (wrong consumer key, bad nonce, expired
+                        timestamp...). Re-authenticating the user won't help here.
+        settings:
+            authorizationUri: https://example-identity-provider.com/oauth2/authorize
+            accessTokenUri: https://example-identity-provider.com/oauth2/token
+            authorizationGrants: [ authorization_code ]
 types:
     UUID:
         type: string
@@ -37,7 +69,7 @@ types:
             orderItems: OrderItem[]
             creationDate: datetime
             deliveryDate: datetime
-            clientAddress:
+            clientAddress: 
                 type: object
                 properties:
                     street: string
@@ -58,34 +90,13 @@ types:
             }]
             creationDate: 2021-12-01T12:30:22.52Z
             deliveryDate: 2021-12-01T13:30:22.52Z
-            clientAddress:
+            clientAddress: 
                 street: Prosta 12
                 city: Warszawa
                 zipCode: 00-631
             additionalInfo: Info from the client
             orderStatus: Pending
             confirmedPayment: false
-    Client:
-        description: Client
-        type: object
-        properties:
-            userId: UUID
-            phoneNumber:
-                type: string
-                pattern: ^[0-9]{9}$
-            clientAddress:
-                type: object
-                properties:
-                    street: string
-                    city: string
-                    zipCode: string
-        example:
-            userId: 2bcd5428-7bb2-11ec-90d6-0242ac120003
-            phoneNumber: "123456789"
-            clientAddress:
-                street: Prosta 12
-                city: Warszawa
-                zipCode: 00-631
     ComplaintStatus:
         type: string
         enum: [Pending, Accepted, Rejected]
@@ -102,25 +113,16 @@ types:
             orderId: e41d4a1b-e771-4eae-84c8-c598ee60d627
             status: Rejected
             text: Delivery was 5 minutes late
-    Product:
-        description: Product
-        type: object
-        properties:
-            name: string
-            category: string
-            price: number
-            quantity:
-                type: number
-                description: Available quantity. Will always be integral.
-
+        
 /orders:
-    /create:
+    /place:
         /{userId}:
             post:
+                securedBy: [ oauth_2_0 ]
                 description: Add clients order to database
                 body:
                     application/json:
-                        type: Order
+                        type: Order      
                 responses:
                     201:
                         body:
@@ -133,10 +135,11 @@ types:
                             text/plain:
                                 description: |
                                     Failed to create order
-                                type: string
+                                type: string         
     /pending:
         /{shopId}:
-            get:
+            get: 
+                securedBy: [ oauth_2_0 ]
                 description: Get pending orders assigned to shop
                 responses:
                     200:
@@ -153,6 +156,7 @@ types:
                                 type: string
     /{orderId}:
         get:
+            securedBy: [ oauth_2_0 ]
             description: Get chosen order
             responses:
                 200:
@@ -169,7 +173,8 @@ types:
                             type: string
         /takeForPreparation:
             put:
-                description: Set order state to inPreparation
+                securedBy: [ oauth_2_0 ]
+                description: Set order state to inPreparation 
                 body:
                     application/json:
                         type: OrderStatus
@@ -188,7 +193,8 @@ types:
                                 type: string
         /confirm:
             put:
-                description: Set order state to ReadyForDelivery
+                securedBy: [ oauth_2_0 ]
+                description: Set order state to ReadyForDelivery 
                 body:
                     application/json:
                         type: OrderStatus
@@ -205,46 +211,9 @@ types:
                                 description: |
                                     Failed to take for delivery.
                                 type: string
-        /pickup:
-            put:
-                description: Set order state to PickedUpByCourier
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        body:
-                            application/json:
-                                description: |
-                                    Successfully picked up order.
-                                type: OrderStatus
-                    404:
-                        body:
-                            text/plain:
-                                description: |
-                                    Failed to pick up the order.
-                                type: string
         /reject:
-            /{userId}:
-                put:
-                    description: The order was rejected by the client.
-                    body:
-                        application/json:
-                            type: OrderStatus
-                    responses:
-                        200:
-                            body:
-                                application/json:
-                                    description: |
-                                        The order was rejected by client.
-                                    type: OrderStatus
-                        404:
-                            body:
-                                text/plain:
-                                    description: |
-                                        Order not found
-                                    type: string
             put:
+                securedBy: [ oauth_2_0 ]
                 description: The order was rejected by the shop.
                 body:
                     application/json:
@@ -262,51 +231,32 @@ types:
                                 description: |
                                     Order not found
                                 type: string
-        /payment:
-            put:
-                description: |
-                    Update payment status.
+/complaints:
+    /create:
+        /{userId}:
+            post:
+                securedBy: [ oauth_2_0 ]
+                description: Add clients complaint to database
                 body:
                     application/json:
-                        type: boolean
+                        type: Complaint      
                 responses:
-                    200:
+                    201:
                         body:
                             application/json:
                                 description: |
-                                    Successfully updated the payment state.
-                                type: boolean
+                                    Successfully made a complaint
+                                type: Complaint
                     404:
                         body:
                             text/plain:
                                 description: |
-                                    Failed to update the payment state.
-                                type: string
-
-/complaints:
-    /create:
-            /{userId}:
-                post:
-                    description: Add clients complaint to database
-                    body:
-                        application/json:
-                            type: Complaint
-                    responses:
-                        201:
-                            body:
-                                application/json:
-                                    description: |
-                                        Successfully made a complaint
-                                    type: Complaint
-                        404:
-                            body:
-                                text/plain:
-                                    description: |
-                                        Failed to make a complaint
-                                    type: string
+                                    Failed to make a complaint
+                                type: string    
     /pending:
         /{shopId}:
             get:
+                securedBy: [ oauth_2_0 ]
                 description: Get pending complaints adressed to the shop
                 responses:
                     200:
@@ -323,6 +273,7 @@ types:
                                 type: string
     /{complaintId}:
         get:
+            securedBy: [ oauth_2_0 ]
             description: Get chosen complaint.
             responses:
                 200:
@@ -339,7 +290,8 @@ types:
                             type: string
         /accept:
             put:
-                description: Accept complaint
+                securedBy: [ oauth_2_0 ]
+                description: Accept complaint 
                 body:
                     application/json:
                         type: ComplaintStatus
@@ -359,6 +311,7 @@ types:
                                 type: string
         /reject:
             put:
+                securedBy: [ oauth_2_0 ]
                 description: Reject complaint.
                 body:
                     application/json:
@@ -376,25 +329,6 @@ types:
                                 description: |
                                     Complaint not found.
                                 type: string
-
-/clients:
-    /{clientAddress}:
-        get:
-            description: Get details about client
-            responses:
-                200:
-                    body:
-                        application/json:
-                            description: !
-                                Successfully gotten clients info.
-                            type: Client
-                404:
-                    body:
-                        text/plain:
-                            description: |
-                                Client not found.
-                            type: string
-
 /products:
     /{productId}:
         get:
@@ -406,6 +340,20 @@ types:
                             description: |
                                 Successfully got product info.
                             type: Product
+                404:
+                    body:
+                        text/plain:
+                            description: |
+                                Product not found.
+        delete:
+            securedBy: [ oauth_2_0 ]
+            description: remove product from shops's offer
+            responses:
+                200:
+                    body:
+                        application/json:
+                            description: |
+                                Succesfully deleted product.
                 404:
                     body:
                         text/plain:
@@ -436,4 +384,20 @@ types:
                         description: |
                             Successfully got products info.
                         type: Product[]
-
+    post:
+        securedBy: [ oauth_2_0 ]
+        description: Add product to shop's offer
+        body:
+            application/json:
+                type: Product
+        responses:
+            200:
+                body:
+                    description: |
+                        Succesfully added product.
+                    type: boolean
+            404:
+                text/plain:
+                    description: |
+                        Failed to add product.
+                    type: string
