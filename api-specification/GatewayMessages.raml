@@ -167,6 +167,36 @@ types:
                 description: Available quantity. Will always be integral.
 
 /orders:
+    /:
+        get:
+            securedBy: [ oauth_2_0 ]
+            description: Get all current orders
+            responses:
+                200:
+                    description: Successfully got current orders
+                    body:
+                        application/json:
+                            type: Order
+                404:
+                    description: Failed to get current orders
+                    body:
+                        text/plain:
+                            type: string
+    /history:
+        get:
+            securedBy: [ oauth_2_0 ]
+            description: Get orders history
+            responses:
+                200:
+                    description: Successfully got orders history
+                    body:
+                        application/json:
+                            type: Order
+                404:
+                    description: Failed to get orders history
+                    body:
+                        text/plain:
+                            type: string
     /create:
         post:
             securedBy: [ oauth_2_0 ]
