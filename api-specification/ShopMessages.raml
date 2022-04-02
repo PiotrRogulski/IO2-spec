@@ -2,6 +2,23 @@
 title: Groceries delivery app - Shop module
 version: v1
 baseUri: https://shop.mini-delivery.com/
+traits:
+  paginated:
+      queryParameters:
+        page:
+          description: page
+          required: false
+          type: integer
+          format: int32
+        pageSize:
+          description: pageSize
+          required: false
+          type: integer
+          format: int32    
+      responses:
+        200:
+          headers:
+            x-total-pages:  
 securitySchemes:
     oauth_2_0:
         description: |
@@ -352,7 +369,8 @@ types:
     /category:
         /{category}:
             get:
-                description: Get all products in the specifies category
+                is: [ paginated ]
+                description: Get all products in the specifies category (paginated)
                 responses:
                     200:
                         description: Successfully got products info.
@@ -367,7 +385,8 @@ types:
                                 type: string
                         
     get:
-        description: Get all products
+        is: [ paginated ]
+        description: Get all products (paginated)
         responses:
             200:
                 description: Successfully got products info.
