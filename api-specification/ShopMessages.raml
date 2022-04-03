@@ -194,60 +194,23 @@ types:
                     body:
                         text/plain:
                             type: string
-        /takeForPreparation:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Set order state to inPreparation 
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        description: Successfully taken for preperation.
-                        body:
-                            application/json:
-                                type: OrderStatus
-                    404:
-                        description: Failed to take for preperation.
-                        body:
-                            text/plain:
-                                type: string
-        /confirm:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Set order state to ReadyForDelivery 
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        description: Successfully taken for delivery.
-                        body:
-                            application/json:
-                                type: OrderStatus
-                    404:
-                        description: Failed to take for delivery.
-                        body:
-                            text/plain:
-                                type: string
-        /reject:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: The order was rejected by the shop.
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        description: The order was rejected by shop.
-                        body:
-                            application/json:
-                                type: OrderStatus
-                    404:
-                        description: Order not found                    
-                        body:
-                            text/plain:
-                                type: string
+        put:
+            securedBy: [ oauth_2_0 ]
+            description: Set order status
+            body:
+                application/json:
+                    type: OrderStatus
+            responses:
+                200:
+                    description: Successfully set order status
+                    body:
+                        text/plain:
+                            type: string
+                404:
+                    description: Order doesn't exist
+                    body:
+                        text/plain:
+                            type: string
 /complaints:
     /create:
         post:
