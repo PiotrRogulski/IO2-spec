@@ -133,6 +133,17 @@ types:
 				type: UUID
 			orderId:
 				type: UUID
+	Message:
+		type: object
+		description: A message sent between a client and a courier
+		properties:
+			sender:
+				type: UUID
+			subject:
+				type: string
+			body:
+				type: string
+
 /status:
 	/{courierId}:
 		get:
@@ -140,7 +151,7 @@ types:
 			description: Query the status of a courier
 			responses:
 				200:
-					description: Successfully got courier status
+					description: Successfully got courier status.
 					body:
 						application/json:
 							type: CourierStatus
@@ -152,7 +163,25 @@ types:
 /requestPickup:
 	post:
 		securedBy: [ oauth_2_0 ]
-		description: Request the courier to pick up the order
+		description: Request the courier to pick up the order.
 		body:
 			application/json:
 				type: PickupRequest
+
+/message:
+	/client:
+		/{clientId}:
+			post:
+                securedBy: [ oauth_2_0 ]
+				description: Send a message to the client.
+				body:
+					application/json:
+						type: Message
+	/courier:
+		/{courierId}:
+			post:
+                securedBy: [ oauth_2_0 ]
+				description: Send a message to the courier.
+				body:
+					application/json:
+						type: Message
