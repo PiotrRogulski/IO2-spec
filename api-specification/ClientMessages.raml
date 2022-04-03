@@ -1,7 +1,7 @@
 #%RAML 1.0
 title: Groceries delivery app - Gateway
 version: v1
-baseUri: https://mini-delivery.com/
+baseUri: https://client.mini-delivery.com/
 traits:
   paginated:
       queryParameters:
@@ -197,40 +197,6 @@ types:
                     body:
                         text/plain:
                             type: string
-    /create:
-        post:
-            securedBy: [ oauth_2_0 ]
-            description: Add clients order to database
-            body:
-                application/json:
-                    type: Order
-            responses:
-                201:
-                    description: Successfully created order
-                    body:
-                        application/json:
-                            type: Order
-                404:
-                    description: Failed to create order
-                    body:
-                        text/plain:
-                            type: string
-    /pending:
-        /{shopId}:
-            get:
-                securedBy: [ oauth_2_0 ]
-                description: Get pending orders assigned to shop
-                responses:
-                    200:
-                        description: Successfully got pending orders
-                        body:
-                            application/json:
-                                type: Order[]
-                    404:
-                        description: Failed to get pending orders
-                        body:
-                            text/plain:
-                                type: string
     /{orderId}:
         get:
             securedBy: [ oauth_2_0 ]
@@ -246,60 +212,6 @@ types:
                     body:
                         text/plain:
                             type: string
-        /takeForPreparation:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Set order state to inPreparation
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        description: Successfully taken for preperation.
-                        body:
-                            application/json:
-                                type: OrderStatus
-                    404:
-                        description: Failed to take for preperation.
-                        body:
-                            text/plain:
-                                type: string
-        /confirm:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Set order state to ReadyForDelivery
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        description: Successfully taken for delivery.
-                        body:
-                            application/json:
-                                type: OrderStatus
-                    404:
-                        description: Failed to take for delivery.
-                        body:
-                            text/plain:
-                                type: string
-        /pickup:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Set order state to PickedUpByCourier
-                body:
-                    application/json:
-                        type: OrderStatus
-                responses:
-                    200:
-                        description: Successfully picked up order.
-                        body:
-                            application/json:
-                                type: OrderStatus
-                    404:
-                        description: Failed to pick up the order.
-                        body:
-                            text/plain:
-                                type: string
         /reject:
             put:
                 securedBy: [ oauth_2_0 ]
@@ -318,24 +230,6 @@ types:
                         body:
                             text/plain:
                                 type: string
-            /shop:
-                put:
-                    securedBy: [ oauth_2_0 ]
-                    description: The order was rejected by the shop.
-                    body:
-                        application/json:
-                            type: OrderStatus
-                    responses:
-                        200:
-                            description: The order was rejected by shop.
-                            body:
-                                application/json:
-                                    type: OrderStatus
-                        404:
-                            description: Order not found
-                            body:
-                                text/plain:
-                                    type: string
         /payment:
             put:
                 securedBy: [ oauth_2_0 ]
@@ -352,93 +246,6 @@ types:
                                 type: boolean
                     404:
                         description: Failed to update the payment state.
-                        body:
-                            text/plain:
-                                type: string
-
-/complaints:
-    /create:
-        post:
-            securedBy: [ oauth_2_0 ]
-            description: Add clients complaint to database
-            body:
-                application/json:
-                    type: Complaint
-            responses:
-                201:
-                    description: Successfully made a complaint
-                    body:
-                        application/json:
-                            type: Complaint
-                404:
-                    description: Failed to make a complaint
-                    body:
-                        text/plain:
-                            type: string
-    /pending:
-        /{shopId}:
-            get:
-                securedBy: [ oauth_2_0 ]
-                description: Get pending complaints adressed to the shop
-                responses:
-                    200:
-                        description: Successfully got pending complaints.
-                        body:
-                            application/json:
-                                type: Complaint[]
-                    404:
-                        description: Failed to get pending complaints.
-                        body:
-                            text/plain:
-                                type: string
-    /{complaintId}:
-        get:
-            securedBy: [ oauth_2_0 ]
-            description: Get chosen complaint.
-            responses:
-                200:
-                    description: Successfully got chosen complaint.
-                    body:
-                        application/json:
-                            type: Complaint
-                404:
-                    description: Failed to get this complaint.
-                    body:
-                        text/plain:
-                            type: string
-        /accept:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Accept complaint
-                body:
-                    application/json:
-                        type: ComplaintStatus
-                responses:
-                    200:
-                        description: Accepted complaint.
-                        body:
-                            application/json:
-                                type: ComplaintStatus
-                    404:
-                        description: Complaint not found.
-                        body:
-                            text/plain:
-                                type: string
-        /reject:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Reject complaint.
-                body:
-                    application/json:
-                        type: ComplaintStatus
-                responses:
-                    200:
-                        description: Rejected complaint.
-                        body:
-                            application/json:
-                                type: ComplaintStatus
-                    404:
-                        description: Complaint not found.
                         body:
                             text/plain:
                                 type: string
@@ -460,46 +267,4 @@ types:
                         text/plain:
                             type: string
 
-/products:
-    /{productId}:
-        get:
-            description: Get product information
-            responses:
-                200:
-                    description: Successfully got product info.
-                    body:
-                        application/json:
-                            type: Product
-                404:
-                    description: Product not found.
-                    body:
-                        text/plain:
-                            type: string
-                   
-    /category:
-        /{category}:
-            get:
-                is: [ paginated ]
-                description: Get all products in the specifies category (paginated)
-                responses:
-                    200:
-                        description: Successfully got products info.
-                        body:
-                            application/json:
-                                type: Product[]
-                    404:
-                        description: Category not found.
-                        body:
-                            text/plain:
-                                type: string
-                    
-    get:
-        is: [ paginated ]
-        description: Get all products (paginated)
-        responses:
-            200:
-                description: Successfully got products info.
-                body:
-                    application/json:
-                        type: Product[]
 
