@@ -159,13 +159,19 @@ types:
         description: Product
         type: object
         properties:
-			productId: UUID
+            productId: UUID
             name: string
             category: string
             price: number
             quantity:
                 type: number
                 description: Available quantity. Will always be integral.
+        example:
+            productId: 061ac70b-e370-40ca-a12e-9ea146ae9429
+            name: Milk
+            category: Food
+            price: 12
+            quantity: 100
 
 /orders:
     /:
