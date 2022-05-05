@@ -172,6 +172,36 @@ types:
             category: Food
             price: 12
             quantity: 100
+    ProductForCreation:
+        description: Product for Creation
+        type: object
+        properties:
+            name: string
+            category: string
+            price: number
+            quantity:
+                type: number
+                description: Available quantity. Will always be integral.
+        example:
+            name: Milk
+            category: Food
+            price: 12
+            quantity: 100
+    ProductForUpdate:     
+        description: Product for Update
+        type: object
+        properties:
+            name: string
+            category: string
+            price: number
+            quantity:
+                type: number
+                description: Available quantity. Will always be integral.
+        example:
+            name: Milk
+            category: Food
+            price: 12
+            quantity: 100
 
 /orders:
     /:
@@ -408,8 +438,33 @@ types:
                     description: Product not found.
                     body:
                         text/plain:
+                            type: string                      
+        delete:
+            securedBy: [ oauth_2_0 ]
+            description: Remove product from shops's offer
+            responses:
+                204:
+                    description: Succesfully deleted product.
+                404:
+                    description: Product not found.
+                    body:
+                        text/plain:
                             type: string
-                   
+        put:
+            securedBy: [ oauth_2_0 ]
+            description: Update product in shop's offer
+            body:
+                application/json:
+                    type: ProductForUpdate
+            responses:
+                204:
+                    description: Succesfully product updated
+                404:
+                    description: Product not found.
+                    body:
+                        text/plain:
+                            type: string
+                                        
     /category:
         /{category}:
             get:
@@ -436,4 +491,22 @@ types:
                 body:
                     application/json:
                         type: Product[]
-
+    post:
+        securedBy: [ oauth_2_0 ]
+        description: Add product to shop's offer
+        body:
+            application/json:
+                type: ProductForCreation
+        responses:
+            201:
+                description: Succesfully added product.
+                body:
+                    type: Product
+                headers:
+                    Location:
+                        description: 'URI for the new resource returned'
+                        type: string
+            400:
+                description: Failed to add product.
+                text/plain:
+                    type: string
