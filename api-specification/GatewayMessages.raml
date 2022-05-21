@@ -61,7 +61,6 @@ types:
         description: Element of an order
         type: object
         properties:
-            orderItemId: UUID
             grossPrice:
                 type: number
                 description: the final sales price per unit of an item
@@ -71,7 +70,6 @@ types:
             productName: string
             quantity: number
         example:
-            orderItemId: ca543631-3df7-4d06-8091-179df67c8460
             grossPrice: 12
             currency: PLN
             productName: bread
@@ -80,12 +78,11 @@ types:
         description: Element of an OrderForCreation
         type: object
         properties:
-            orderItemId: UUID
+            productId: UUID
             quantity: number
         example:
             orderItemId: ca543631-3df7-4d06-8091-179df67c8460
             quantity: 3
-
     OrderStatus:
         type: object
         description: Order Status
@@ -113,7 +110,6 @@ types:
             orderId: c2cf4e9e-0393-4189-af47-0aab382ce330
             orderItems: [
             {
-                orderItemId: ca543631-3df7-4d06-8091-179df67c8460,
                 grossPrice: 12,
                 currency: PLN,
                 productName: bread,
@@ -140,10 +136,9 @@ types:
                     zipCode: string
             additionalInfo: string
         example:
-            orderId: c2cf4e9e-0393-4189-af47-0aab382ce330
             orderItems: [
             {
-                orderItemId: ca543631-3df7-4d06-8091-179df67c8460,
+                productId: ca543631-3df7-4d06-8091-179df67c8460,
                 quantity: 3
             }]
             clientAddress:
