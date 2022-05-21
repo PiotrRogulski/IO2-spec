@@ -56,8 +56,9 @@ types:
         type: string
         description: UUID
         pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+
     OrderItem:
-        description: element of an order
+        description: Element of an order
         type: object
         properties:
             orderItemId: UUID
@@ -75,13 +76,23 @@ types:
             currency: PLN
             productName: bread
             quantity: 3
+    OrderItemForCreation:
+        description: Element of an OrderForCreation
+        type: object
+        properties:
+            orderItemId: UUID
+            quantity: number
+        example:
+            orderItemId: ca543631-3df7-4d06-8091-179df67c8460
+            quantity: 3
+
     OrderStatus:
         type: object
         description: Order Status
         properties:
             orderStatus:
                 type: string
-                enum: [Pending, InPreparation, ReadyForDelivery, PickedUpByCourier, RejectedByShop, RejectedByCustomer, Delivered]
+                enum: [Pending, RejectedByShop, InProgress, ReadyForDelivery, WaitingForPickUp, PickedUpByCourier, Delivered]
     Order:
         description: Groceries products order
         type: object
@@ -98,7 +109,6 @@ types:
                     zipCode: string
             additionalInfo: string
             orderStatus: OrderStatus
-            confirmedPayment: boolean
         example:
             orderId: c2cf4e9e-0393-4189-af47-0aab382ce330
             orderItems: [
@@ -117,44 +127,30 @@ types:
                 zipCode: 00-631
             additionalInfo: Info from the client
             orderStatus: Pending
-            confirmedPayment: false
-    Client:
-        description: Client
+    OrderForCreation:
+        description: Model for placing new order by Customer
         type: object
         properties:
-            userId: UUID
-            phoneNumber:
-                type: string
-                pattern: ^[0-9]{9}$
+            orderItems: OrderItemForCreation[]
             clientAddress:
                 type: object
                 properties:
                     street: string
                     city: string
                     zipCode: string
+            additionalInfo: string
         example:
-            userId: 2bcd5428-7bb2-11ec-90d6-0242ac120003
-            phoneNumber: "123456789"
+            orderId: c2cf4e9e-0393-4189-af47-0aab382ce330
+            orderItems: [
+            {
+                orderItemId: ca543631-3df7-4d06-8091-179df67c8460,
+                quantity: 3
+            }]
             clientAddress:
                 street: Prosta 12
                 city: Warszawa
                 zipCode: 00-631
-    ComplaintStatus:
-        type: string
-        enum: [Pending, Accepted, Rejected]
-    Complaint:
-        description: Complaint
-        type: object
-        properties:
-            complaintId: UUID
-            orderId: UUID
-            status: ComplaintStatus
-            text: string
-        example:
-            complaintId: 061ac70b-e370-40ca-a12e-9ea146ae9429
-            orderId: e41d4a1b-e771-4eae-84c8-c598ee60d627
-            status: Rejected
-            text: Delivery was 5 minutes late
+            additionalInfo: Info from the client
     Product:
         description: Product
         type: object
@@ -190,7 +186,7 @@ types:
     ProductForUpdate:     
         description: Product for Update
         type: object
-        properties:
+        properties: 
             name: string
             category: string
             price: number
@@ -202,228 +198,165 @@ types:
             category: Food
             price: 12
             quantity: 100
+    CourierStatus:
+        type: object
+        description: Order Status
+        properties:
+            orderStatus:
+                type: string
+                enum: [NotAvaible, AvaibleForDelivery, DuringDelivery]
 
 /orders:
-    /:
+    post:
+        securedBy: [ oauth_2_0 ]
+        description: Create new order
+        body:
+            application/json:
+                type: OrderForCreation
+        responses:
+            201:
+                description: Successfully created order
+                body:
+                    application/json:
+                        type: Order
+                headers:
+                    Location:
+                        description: 'URI for the new resource returned'
+                        type: string
+            404:
+                description: Failed to create order
+                body:
+                    text/plain:
+                        type: string
+    /shop:
         get:
             securedBy: [ oauth_2_0 ]
-            description: Get all current orders
+            is: [ paginated ]
+            description: Get all shop orders, sorted by creation date (paginated)
             responses:
                 200:
-                    description: Successfully got current orders
+                    description: Successfully got orders.
                     body:
                         application/json:
-                            type: Order
-                404:
-                    description: Failed to get current orders
-                    body:
-                        text/plain:
-                            type: string
-    /history:
-        get:
-            securedBy: [ oauth_2_0 ]
-            description: Get orders history
-            responses:
-                200:
-                    description: Successfully got orders history
-                    body:
-                        application/json:
-                            type: Order
-                404:
-                    description: Failed to get orders history
-                    body:
-                        text/plain:
-                            type: string
-    /create:
-        post:
-            securedBy: [ oauth_2_0 ]
-            description: Add clients order to database
-            body:
-                application/json:
-                    type: Order
-            responses:
-                201:
-                    description: Successfully created order
-                    body:
-                        application/json:
-                            type: Order
-                404:
-                    description: Failed to create order
-                    body:
-                        text/plain:
-                            type: string
-    /pending:
-        /{shopId}:
+                            type: Order[]
+        /pending:
             get:
                 securedBy: [ oauth_2_0 ]
-                description: Get pending orders assigned to shop
+                is: [ paginated ]
+                description: Get all pending (not completed yet) shop orders, sorted by creation date (paginated)
                 responses:
                     200:
-                        description: Successfully got pending orders
+                        description: Successfully got orders.
+                        body:
+                            application/json:
+                                type: Order[]                                
+    /courier:
+        get:
+            securedBy: [ oauth_2_0 ]
+            is: [ paginated ]
+            description: Get all courier orders, sorted by creation date (paginated)
+            responses:
+                200:
+                    description: Successfully got orders.
+                    body:
+                        application/json:
+                            type: Order[]
+        /current:
+            get:
+                securedBy: [ oauth_2_0 ]
+                description: Get currently in progress order (current courier order)
+                responses:
+                    200:
+                        description: Successfully got currently in progress order
+                        body:
+                            application/json:
+                                type: Order
+                    404:
+                        description: Current order not found.
+                        body:
+                            text/plain:
+                                type: string   
+    /customer:
+        get:
+            securedBy: [ oauth_2_0 ]
+            is: [ paginated ]
+            description: Get all customer orders, sorted by creation date (paginated)
+            responses:
+                200:
+                    description: Successfully got products info.
+                    body:
+                        application/json:
+                            type: Order[]
+        /pending:
+            get:
+                securedBy: [ oauth_2_0 ]
+                is: [ paginated ]
+                description: Get all orders in progress, sorted by creation date (paginated)
+                responses:
+                    200:
+                        description: Successfully got orders.
                         body:
                             application/json:
                                 type: Order[]
-                    404:
-                        description: Failed to get pending orders
-                        body:
-                            text/plain:
-                                type: string
     /{orderId}:
         get:
             securedBy: [ oauth_2_0 ]
-            description: Get chosen order
+            description: Get selected order
             responses:
                 200:
-                    description: Successfully got chosen order
+                    description: Successfully got selected order
                     body:
                         application/json:
                             type: Order
                 404:
-                    description: Failed to get this order
+                    description: Failed to get selected order
                     body:
                         text/plain:
                             type: string
-        put:
+        patch:
             securedBy: [ oauth_2_0 ]
-            description: Set order status
+            description: Update order status
             body:
                 application/json:
                     type: OrderStatus
             responses:
-                200:
-                    description: Successfully set order status
-                    body:
-                        text/plain:
-                            type: string
+                204:
+                    description: Successfully updated order status
                 404:
                     description: Order doesn't exist
                     body:
                         text/plain:
                             type: string
-        /payment:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: |
-                    Update payment status.
-                body:
-                    application/json:
-                        type: boolean
-                responses:
-                    200:
-                        description: Successfully updated the payment state.
-                        body:
-                            application/json:
-                                type: boolean
-                    404:
-                        description: Failed to update the payment state.
-                        body:
-                            text/plain:
-                                type: string
-
-/complaints:
-    /create:
-        post:
+/courier:
+    /status:
+        patch:
             securedBy: [ oauth_2_0 ]
-            description: Add clients complaint to database
+            description: Get courier status 
             body:
                 application/json:
-                    type: Complaint
+                    type: CourierStatus
             responses:
-                201:
-                    description: Successfully made a complaint
-                    body:
-                        application/json:
-                            type: Complaint
-                404:
-                    description: Failed to make a complaint
+                204:
+                    description: Successfully updated courier status 
+                400:
+                    description: Failed to update courier status
                     body:
                         text/plain:
                             type: string
-    /pending:
-        /{shopId}:
-            get:
-                securedBy: [ oauth_2_0 ]
-                description: Get pending complaints adressed to the shop
-                responses:
-                    200:
-                        description: Successfully got pending complaints.
-                        body:
-                            application/json:
-                                type: Complaint[]
-                    404:
-                        description: Failed to get pending complaints.
-                        body:
-                            text/plain:
-                                type: string
-    /{complaintId}:
         get:
             securedBy: [ oauth_2_0 ]
-            description: Get chosen complaint.
+            description: Get courier status 
             responses:
                 200:
-                    description: Successfully got chosen complaint.
+                    description: Successfully got courier status    
                     body:
                         application/json:
-                            type: Complaint
-                404:
-                    description: Failed to get this complaint.
+                            type: CourierStatus
+                400:
+                    description: Failed to get courier status
                     body:
                         text/plain:
                             type: string
-        /accept:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Accept complaint
-                body:
-                    application/json:
-                        type: ComplaintStatus
-                responses:
-                    200:
-                        description: Accepted complaint.
-                        body:
-                            application/json:
-                                type: ComplaintStatus
-                    404:
-                        description: Complaint not found.
-                        body:
-                            text/plain:
-                                type: string
-        /reject:
-            put:
-                securedBy: [ oauth_2_0 ]
-                description: Reject complaint.
-                body:
-                    application/json:
-                        type: ComplaintStatus
-                responses:
-                    200:
-                        description: Rejected complaint.
-                        body:
-                            application/json:
-                                type: ComplaintStatus
-                    404:
-                        description: Complaint not found.
-                        body:
-                            text/plain:
-                                type: string
-
-/clients:
-    /{clientAddress}:
-        get:
-            securedBy: [ oauth_2_0 ]
-            description: Get details about client
-            responses:
-                200:
-                    description: Successfully gotten clients info.
-                    body:
-                        application/json:
-                            type: Client
-                404:
-                    description: Client not found.
-                    body:
-                        text/plain:
-                            type: string
-
 /products:
     /{productId}:
         get:
@@ -464,7 +397,7 @@ types:
                     body:
                         text/plain:
                             type: string
-                                        
+                                   
     /category:
         /{category}:
             get:
@@ -501,7 +434,8 @@ types:
             201:
                 description: Succesfully added product.
                 body:
-                    type: Product
+                    application/json:
+                        type: Product
                 headers:
                     Location:
                         description: 'URI for the new resource returned'
